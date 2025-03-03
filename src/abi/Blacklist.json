@@ -1,0 +1,247 @@
+[
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_addr", "type": "address" }
+    ],
+    "name": "AddressNotFound",
+    "type": "error"
+  },
+  { "inputs": [], "name": "AlreadyReported", "type": "error" },
+  { "inputs": [], "name": "CannotReportYourself", "type": "error" },
+  { "inputs": [], "name": "InvalidInput", "type": "error" },
+  { "inputs": [], "name": "NoReportsFound", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "owner", "type": "address" }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "uint8", "name": "stage", "type": "uint8" },
+          { "internalType": "address", "name": "to", "type": "address" },
+          { "internalType": "bytes32", "name": "txIn", "type": "bytes32" },
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
+        ],
+        "indexed": false,
+        "internalType": "struct ReportModel.ScammerAddressRecord[]",
+        "name": "publicReports",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "PublicReportUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "_transactionHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ScamReported",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_scammerAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "_transactionHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ScamTransactionReported",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "bool", "name": "", "type": "bool" }
+    ],
+    "name": "Success",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "addr", "type": "address" }
+    ],
+    "name": "getAllAddressReports",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint8", "name": "stage", "type": "uint8" },
+          { "internalType": "address", "name": "to", "type": "address" },
+          { "internalType": "bytes32", "name": "txIn", "type": "bytes32" },
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
+        ],
+        "internalType": "struct ReportModel.ScammerAddressRecord[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "addr", "type": "address" }
+    ],
+    "name": "getAllAddressTransactions",
+    "outputs": [
+      { "internalType": "bytes32[]", "name": "", "type": "bytes32[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "addr", "type": "address" }
+    ],
+    "name": "getAllMyReports",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint8", "name": "stage", "type": "uint8" },
+          { "internalType": "address", "name": "to", "type": "address" },
+          { "internalType": "bytes32", "name": "txIn", "type": "bytes32" },
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
+        ],
+        "internalType": "struct ReportModel.ScammerAddressRecord[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "addr", "type": "address" }
+    ],
+    "name": "isAddressReported",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "publicReports",
+    "outputs": [
+      { "internalType": "uint8", "name": "stage", "type": "uint8" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "bytes32", "name": "txIn", "type": "bytes32" },
+      { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address[]",
+            "name": "scammers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "transactions",
+            "type": "bytes32[]"
+          }
+        ],
+        "internalType": "struct ReportModel.UserReport",
+        "name": "report",
+        "type": "tuple"
+      }
+    ],
+    "name": "reportAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "scammerMap",
+    "outputs": [
+      { "internalType": "bool", "name": "reported", "type": "bool" },
+      { "internalType": "address", "name": "scammerAddress", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
