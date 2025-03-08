@@ -1,19 +1,101 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  ArrowLeftIcon,
+} from "@heroicons/react/24/outline";
 import Head from "next/head";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { injected } from "wagmi/connectors";
+import dynamic from "next/dynamic";
+
+// Create a client-only wallet button component
+const WalletButton = () => {
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleConnect = async () => {
+    try {
+      setError(null);
+      setIsConnecting(true);
+      await connect({ connector: injected() });
+    } catch (err: any) {
+      setError(err?.message || "Failed to connect wallet");
+      console.error("Wallet connection error:", err);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  return isConnected ? (
+    <div className="flex items-center gap-4">
+      <span className="text-gray-300 font-mono">
+        {address?.slice(0, 6)}...{address?.slice(-4)}
+      </span>
+      <button onClick={() => disconnect()} className="btn btn-secondary btn-sm">
+        Disconnect
+      </button>
+    </div>
+  ) : (
+    <div className="flex flex-col items-end">
+      <button
+        onClick={handleConnect}
+        disabled={isConnecting}
+        className="btn btn-primary btn-sm"
+      >
+        {isConnecting ? "Connecting..." : "Connect Wallet"}
+      </button>
+      {error && <span className="text-xs text-red-500 mt-1">{error}</span>}
+    </div>
+  );
+};
+
+// Dynamically import the wallet button with no SSR
+const DynamicWalletButton = dynamic(
+  () => import("./WalletButton").then((mod) => mod.WalletButton),
+  { ssr: false }
+);
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleConnect = async () => {
+    try {
+      setError(null);
+      setIsConnecting(true);
+      await connect({ connector: injected() });
+    } catch (err: any) {
+      setError(err?.message || "Failed to connect wallet");
+      console.error("Wallet connection error:", err);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
 
   const isActive = (path: string) => {
     return router.pathname === path;
   };
 
+  const showBackButton = router.pathname !== "/";
+
   return (
-    <div className="min-h-screen flex flex-col bg-dark-900">
+    <div className="min-h-screen bg-dark-950">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
@@ -26,136 +108,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         />
       </Head>
 
-      <header className="bg-dark-800 border-b border-dark-700 shadow-md">
+      <header className="bg-dark-900 border-b border-dark-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <Link
-                  href="/"
-                  className="text-xl font-bold text-primary-500 glow-text"
+            <div className="flex items-center space-x-4">
+              {showBackButton && (
+                <button
+                  onClick={() => router.back()}
+                  className="p-2 rounded-full hover:bg-dark-800 transition-colors duration-200"
+                  aria-label="Go back"
                 >
-                  Lost Finance
-                </Link>
-              </div>
-
-              <nav className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link
-                  href="/report/new"
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    isActive("/report/new")
-                      ? "border-primary-500 text-white"
-                      : "border-transparent text-gray-400 hover:border-dark-500 hover:text-gray-300"
-                  }`}
-                >
-                  Report Address
-                </Link>
-                <Link
-                  href="/check"
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    isActive("/check")
-                      ? "border-primary-500 text-white"
-                      : "border-transparent text-gray-400 hover:border-dark-500 hover:text-gray-300"
-                  }`}
-                >
-                  Verify Address
-                </Link>
-                <Link
-                  href="/reports"
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    isActive("/reports")
-                      ? "border-primary-500 text-white"
-                      : "border-transparent text-gray-400 hover:border-dark-500 hover:text-gray-300"
-                  }`}
-                >
-                  Toxic List
-                </Link>
-              </nav>
+                  <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
+                </button>
+              )}
+              <Link href="/" className="text-xl font-bold text-white">
+                lost.finance
+              </Link>
             </div>
-
-            <div className="flex items-center sm:hidden">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-dark-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
-                aria-expanded="false"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                <span className="sr-only">Open main menu</span>
-                {isMenuOpen ? (
-                  <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                ) : (
-                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                )}
-              </button>
-            </div>
-
-            <div className="hidden sm:ml-6 sm:flex sm:items-center">
-              <button type="button" className="btn btn-primary glow">
-                Connect Wallet
-              </button>
+            <div className="flex items-center">
+              <DynamicWalletButton />
             </div>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="sm:hidden bg-dark-800 border-b border-dark-700">
-            <div className="pt-2 pb-3 space-y-1">
-              <Link
-                href="/"
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                  isActive("/")
-                    ? "bg-dark-700 border-primary-500 text-primary-400"
-                    : "border-transparent text-gray-400 hover:bg-dark-700 hover:border-dark-500 hover:text-gray-300"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Lost Finance
-              </Link>
-              <Link
-                href="/report/new"
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                  isActive("/report/new")
-                    ? "bg-dark-700 border-primary-500 text-primary-400"
-                    : "border-transparent text-gray-400 hover:bg-dark-700 hover:border-dark-500 hover:text-gray-300"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Report Address
-              </Link>
-              <Link
-                href="/check"
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                  isActive("/check")
-                    ? "bg-dark-700 border-primary-500 text-primary-400"
-                    : "border-transparent text-gray-400 hover:bg-dark-700 hover:border-dark-500 hover:text-gray-300"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Verify Address
-              </Link>
-              <Link
-                href="/reports"
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                  isActive("/reports")
-                    ? "bg-dark-700 border-primary-500 text-primary-400"
-                    : "border-transparent text-gray-400 hover:bg-dark-700 hover:border-dark-500 hover:text-gray-300"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Toxic List
-              </Link>
-              <div className="mt-4 pl-3 pr-4">
-                <button type="button" className="btn btn-primary w-full">
-                  Connect Wallet
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </header>
 
-      <main className="flex-grow">{children}</main>
+      <main>{children}</main>
 
       <footer className="bg-dark-800 border-t border-dark-700">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

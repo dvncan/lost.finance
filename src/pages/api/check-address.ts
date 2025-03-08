@@ -1,55 +1,89 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { isAddress } from '@/utils/ethereum'
+import type { NextApiRequest, NextApiResponse } from "next";
+import { isAddress } from "@/utils/ethereum";
+import { ethers } from "ethers";
+import BlacklistABI from "@/abi/Blacklist.json";
+import dotenv from "dotenv";
+dotenv.config();
+
+const CONTRACT_ADDRESS = "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0";
+
+type ScammerReport = {
+  stage: ethers.BigNumberish;
+  to: string;
+  txIn: string;
+  timestamp: ethers.BigNumberish;
+};
+
+// Initialize provider and contract
+const provider = new ethers.JsonRpcProvider(
+  "https://eth-sepolia.g.alchemy.com/v2/" + process.env.ALCHEMY_API_KEY
+);
+const contract = new ethers.Contract(CONTRACT_ADDRESS, BlacklistABI, provider);
 
 type ResponseData = {
-  status: 'malicious' | 'safe' | 'error';
+  status: "malicious" | "safe" | "error";
   details?: any;
-}
+};
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
   try {
-    const { address } = req.query
-    
+    const { address } = req.query;
+
+    console.log("Checking address:", address);
+
     // Validate address
-    if (!address || typeof address !== 'string' || !isAddress(address)) {
-      return res.status(400).json({ 
-        status: 'error', 
-        details: 'Invalid Ethereum address' 
-      })
+    if (!address || typeof address !== "string" || !isAddress(address)) {
+      return res.status(400).json({
+        status: "error",
+        details: "Invalid Ethereum address",
+      });
     }
-    
-    // In a real app, this would query your database
-    // For demo purposes, we'll use localStorage on the client side
-    // This API endpoint would normally check a database
-    
-    // Mock response for demo
-    // In production, this would check your database of reported addresses
-    const isMalicious = Math.random() > 0.7 // Random for demo purposes
-    
-    if (isMalicious) {
+
+    console.log("Calling isAddressReported for:", address);
+    const isReported = await contract.isAddressReported(address);
+    console.log("isReported result:", isReported);
+
+    if (isReported) {
+      console.log("Getting reports for address:", address);
+      const reports = await contract.getAllAddressReports(address);
+      console.log("Reports received:", reports);
+
+      const formattedReports = reports.map((report: ScammerReport) => ({
+        stage: Number(report.stage),
+        to: report.to,
+        txIn: ethers.hexlify(report.txIn),
+        timestamp: Number(report.timestamp),
+      }));
+
       return res.status(200).json({
-        status: 'malicious',
+        status: "malicious",
         details: {
-          reportCount: Math.floor(Math.random() * 10) + 1,
-          latestReport: {
-            createdAt: new Date().toISOString(),
-            description: 'This address was involved in a phishing scam that stole funds from multiple users.'
-          }
-        }
-      })
-    } else {
-      return res.status(200).json({
-        status: 'safe'
-      })
+          reportCount: reports.length,
+          reports: formattedReports,
+        },
+      });
     }
-  } catch (error) {
-    console.error('Error checking address:', error)
-    return res.status(500).json({ 
-      status: 'error', 
-      details: 'Server error while checking address' 
-    })
+
+    return res.status(200).json({
+      status: "safe",
+    });
+  } catch (error: any) {
+    console.error("Detailed error:", {
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+      data: error.data,
+    });
+
+    return res.status(500).json({
+      status: "error",
+      details: {
+        message: error.message,
+        code: error.code,
+      },
+    });
   }
 }
