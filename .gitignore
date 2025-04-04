@@ -9,7 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
-dist-ssr
+dist-x
 *.local
 
 # Editor directories and files
@@ -25,3 +25,4 @@ dist-ssr
 
 #history
 .history/*
+

@@ -6,8 +6,10 @@ import { v4 as uuidv4 } from "uuid";
 import { isAddress, isTransactionHash } from "@/utils/ethereum";
 import { useAccount, useWriteContract, useWatchContractEvent } from "wagmi";
 import BlacklistABI from "@/abi/Blacklist.json";
+import { sepolia } from "@wagmi/chains";
+import { config } from "@/config/wagmi";
 
-const CONTRACT_ADDRESS = "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0";
+const CONTRACT_ADDRESS = "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0" as `0x${string}`;
 
 type TransactionEntry = {
   id: string;
@@ -24,8 +26,11 @@ type FormData = {
 export default function NewReport() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { address } = useAccount();
-  const { writeContract, isError, isPending } = useWriteContract();
+  const { address, chain, isConnected } = useAccount();
+
+  const { writeContract, isError, isPending } = useWriteContract({
+    config,
+  });
 
   const {
     register,
@@ -58,7 +63,18 @@ export default function NewReport() {
   });
 
   const onSubmit = async (data: FormData) => {
+    if (!isConnected) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
+    if (chain?.id !== sepolia.id) {
+      alert("Please switch to the Sepolia test network");
+      return;
+    }
+
     setIsSubmitting(true);
+    
     try {
       // Prepare data for contract
       const scammers = data.transactions.map((t) => t.toAddress);
@@ -66,8 +82,8 @@ export default function NewReport() {
 
       // Submit to contract
       await writeContract({
-        address: CONTRACT_ADDRESS,
         abi: BlacklistABI,
+        address: CONTRACT_ADDRESS,
         functionName: "reportAddress",
         args: [
           {
@@ -75,6 +91,15 @@ export default function NewReport() {
             transactions,
           },
         ],
+      }, {
+        onSuccess(data) {
+          console.log("Transaction hash:", data);
+        },
+        onError(error) {
+          console.error("Error submitting report:", error);
+          setIsSubmitting(false);
+          alert("Failed to submit report. Please try again.");
+        },
       });
     } catch (error) {
       console.error("Error submitting report:", error);

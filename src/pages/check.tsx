@@ -1,9 +1,14 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { isAddress } from "@/utils/ethereum";
 import { useReadContract } from "wagmi";
 import BlacklistABI from "@/abi/Blacklist.json";
+import { useClient } from "../hooks/useClient";
+import { NetworkSwitchModal } from "@/components/NetworkSwitchModal";
+import { sepolia } from "@wagmi/chains";
+import { useAccount } from "wagmi";
+import { useConfig } from "wagmi";
 
 const CONTRACT_ADDRESS = "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0";
 
@@ -24,7 +29,20 @@ export default function CheckAddress() {
     status: string;
     details?: any;
   } | null>(null);
+  const isClient = useClient();
   const addressToCheck = watch("address");
+  const { chain } = useAccount();
+  const { isConnected } = useAccount();
+  const [showNetworkModal, setShowNetworkModal] = useState(
+    chain?.id !== sepolia.id
+  );
+
+  // Show network modal when user connects
+  useEffect(() => {
+    if (isClient && isConnected && chain?.id !== sepolia.id) {
+      setShowNetworkModal(true);
+    }
+  }, [isClient, isConnected, chain]);
 
   const { data: isReported, isLoading: isCheckingReported } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -84,8 +102,40 @@ export default function CheckAddress() {
     }
   };
 
+  // Prevent rendering wagmi hooks on server
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-dark-900">
+        <Head>
+          <div>
+            <title>
+              Verify Ethereum Address | Check for Crypto Scams | Blockchain
+              Security Tool
+            </title>
+            <meta
+              name="description"
+              content="Verify Ethereum addresses before sending funds. Our crypto fraud detection tool checks if an address has been reported for scams, helping you avoid cryptocurrency theft."
+            />
+            <meta
+              name="keywords"
+              content="verify ethereum address, check crypto scam, crypto fraud detection, blockchain security check, ethereum address verification, crypto scam checker, cryptocurrency security, crypto fraud prevention"
+            />
+          </div>
+        </Head>
+        <div className="container mx-auto px-4 py-12">
+          <h1 className="text-3xl font-bold text-white mb-4">
+            Checking Address...
+          </h1>
+          <p className="text-gray-300">
+            Please wait while we verify the address.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="min-h-screen bg-dark-900">
       <Head>
         <title>
           Verify Ethereum Address | Check for Crypto Scams | Blockchain Security
@@ -99,133 +149,88 @@ export default function CheckAddress() {
           name="keywords"
           content="verify ethereum address, check crypto scam, crypto fraud detection, blockchain security check, ethereum address verification, crypto scam checker, cryptocurrency security, crypto fraud prevention"
         />
-
-        {/* Open Graph / Social Media Meta Tags */}
-        <meta
-          property="og:title"
-          content="Verify Ethereum Address | Check for Crypto Scams"
-        />
-        <meta
-          property="og:description"
-          content="Verify Ethereum addresses before sending funds. Our crypto fraud detection tool checks if an address has been reported for scams, helping you avoid cryptocurrency theft."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://lost.finance/check" />
       </Head>
-
-      <div className="max-w-2xl mx-auto px-4 py-12 animate-fadeIn">
-        <h1 className="text-3xl font-bold text-center mb-8 text-white glow-text">
+      <div>
+        {/* Network Switch Modal */}
+        <NetworkSwitchModal
+          isOpen={showNetworkModal}
+          onClose={() => setShowNetworkModal(false)}
+        />
+      </div>
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold text-white mb-8">
           Verify Ethereum Address
         </h1>
 
-        <div className="card mb-8 hover:glow transition-all duration-300">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="mb-4">
-              <label htmlFor="address" className="label">
-                Ethereum Address to Verify
-              </label>
-              <input
-                id="address"
-                type="text"
-                className="input"
-                placeholder="0x..."
-                {...register("address", {
-                  required: "Address is required",
-                  validate: (value) =>
-                    isAddress(value) || "Invalid Ethereum address",
-                })}
-              />
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
+          <div className="mb-4">
+            <label htmlFor="address" className="block text-white mb-2">
+              Ethereum Address
+            </label>
+            <input
+              type="text"
+              {...register("address")}
+              className="w-full px-4 py-2 border rounded-lg bg-dark-800 border-gray-700 text-white focus:outline-none focus:border-primary-500"
+              placeholder="Enter Ethereum address to check"
+            />
+          </div>
 
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? "Checking..." : "Verify Address for Scams"}
-            </button>
-          </form>
-        </div>
-
-        {result && (
-          <div
-            className={`card border-l-4 ${
-              result.status === "malicious"
-                ? "border-danger-500 bg-dark-900"
-                : result.status === "safe"
-                ? "border-green-500 bg-dark-900"
-                : "border-yellow-500 bg-dark-900"
-            } animate-fadeIn`}
-          >
-            <h2 className="text-xl font-semibold mb-2 text-white">
-              {result.status === "malicious"
-                ? "⚠️ Malicious Address Detected"
-                : result.status === "safe"
-                ? "✅ Address Appears Safe"
-                : "⚠️ Error Checking Address"}
-            </h2>
-
-            {result.status === "malicious" && result.details && (
-              <div className="space-y-2">
-                <p className="text-danger-400">
-                  This address has been reported as malicious by{" "}
-                  {result.details.reportCount} user(s). Potential crypto scam
-                  detected.
-                </p>
-                {result.details.reports &&
-                  result.details.reports.length > 0 && (
+          {result && (
+            <div className="mt-4 p-4 rounded-lg bg-dark-800 border">
+              {result.status === "malicious" ? (
+                <div className="text-red-400">
+                  <h2 className="font-semibold mb-2">
+                    Warning: Malicious Address
+                  </h2>
+                  <p>This address has been reported for fraudulent activity.</p>
+                  {result.details && (
                     <div className="mt-4">
-                      <p className="font-medium text-white">Latest report:</p>
-                      <p className="text-sm text-gray-400">
-                        {new Date(
-                          result.details.reports[0].timestamp * 1000
-                        ).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm text-gray-300 mt-1">
-                        Transaction Hash: {result.details.reports[0].txIn}
-                      </p>
+                      <h3 className="font-medium mb-2">
+                        Reports ({result.details.reportCount})
+                      </h3>
+                      <ul className="space-y-2">
+                        {result.details.reports.map(
+                          (report: any, index: number) => (
+                            <li key={index} className="text-gray-300">
+                              <p>
+                                Reported at:{" "}
+                                {new Date(
+                                  report.timestamp * 1000
+                                ).toLocaleString()}
+                              </p>
+                              <p>Transaction: {report.txIn.slice(0, 10)}...</p>
+                            </li>
+                          )
+                        )}
+                      </ul>
                     </div>
                   )}
-              </div>
-            )}
+                </div>
+              ) : result.status === "safe" ? (
+                <div className="text-green-400">
+                  <h2 className="font-semibold mb-2">Safe Address</h2>
+                  <p>
+                    This address has not been reported for fraudulent activity.
+                  </p>
+                </div>
+              ) : (
+                <div className="text-red-400">
+                  <h2 className="font-semibold mb-2">Error</h2>
+                  <p>{result.details}</p>
+                </div>
+              )}
+            </div>
+          )}
 
-            {result.status === "safe" && (
-              <p className="text-green-400">
-                No malicious reports found for this address. However, always
-                exercise caution when interacting with any cryptocurrency
-                address to prevent fraud.
-              </p>
-            )}
-
-            {result.status === "error" && (
-              <p className="text-yellow-400">
-                {result.details ||
-                  "There was an error checking this address. Please try again."}
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="mt-12 bg-dark-800 p-6 rounded-lg border border-dark-700">
-          <h2 className="text-xl font-semibold mb-4 text-white">
-            Why Verify Ethereum Addresses?
-          </h2>
-          <p className="text-gray-300 mb-4">
-            Cryptocurrency scams and fraud are increasingly common in the
-            blockchain ecosystem. Before sending funds or interacting with any
-            Ethereum address, it's crucial to verify its legitimacy.
-          </p>
-          <p className="text-gray-300 mb-4">
-            Our crypto fraud detection tool checks addresses against a
-            community-maintained database of reported scams, helping you make
-            informed decisions and protect your digital assets.
-          </p>
-          <p className="text-gray-300">
-            Remember: Always verify before you transact. Blockchain transactions
-            cannot be reversed once confirmed.
-          </p>
-        </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-4"
+          >
+            {isLoading ? "Checking..." : "Check Address"}
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 }
