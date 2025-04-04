@@ -1,8 +1,1 @@
-{
-  "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/": "pages/index.js",
-  "/report/new": "pages/report/new.js",
-  "/check": "pages/check.js"
-}
+{"/_app":"pages/_app.js","/api/check-address":"pages/api/check-address.js","/api/interfaces":"pages/api/interfaces.js","/api/reports":"pages/api/reports.js","/check":"pages/check.html","/":"pages/index.html","/report/[id]/confirmation":"pages/report/[id]/confirmation.html","/report/[id]/details":"pages/report/[id]/details.html","/report/[id]/view":"pages/report/[id]/view.html","/report/new":"pages/report/new.html","/reports":"pages/reports.html","/_error":"pages/_error.js","/_document":"pages/_document.js","/404":"pages/404.html"}
