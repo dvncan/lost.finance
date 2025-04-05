@@ -12,4 +12,7 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = {
+  distDir: 'dist',
+  ...nextConfig
+};

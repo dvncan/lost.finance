@@ -5,7 +5,7 @@ import { isAddress } from "@/utils/ethereum";
 import { useReadContract } from "wagmi";
 import BlacklistABI from "@/abi/Blacklist.json";
 import { useClient } from "../hooks/useClient";
-import { NetworkSwitchModal } from "@/components/NetworkSwitchModal";
+import NetworkSwitchModal from "@/components/NetworkSwitchModal";
 import { sepolia } from "@wagmi/chains";
 import { useAccount } from "wagmi";
 import { useConfig } from "wagmi";

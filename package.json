@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "local-dev": "yarn dev",
+    "local-build": "yarn build",
+    "local-start": "yarn start",
+    "local-lint": "yarn lint",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
