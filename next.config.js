@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: 'dist',
+  reactStrictMode: true,
   images: {
     unoptimized: true
   },
@@ -10,9 +12,15 @@ const nextConfig = {
   publicRuntimeConfig: {
     network: process.env.NETWORK,
   },
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+    };
+    return config;
+  },
 }
 
-module.exports = {
-  distDir: 'dist',
-  ...nextConfig
-};
+module.exports = nextConfig;

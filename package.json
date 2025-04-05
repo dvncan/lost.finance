@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "local-dev": "yarn dev",
-    "local-build": "yarn build",
-    "local-start": "yarn start",
-    "local-lint": "yarn lint",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -30,7 +26,7 @@
     "swr": "^2.2.4",
     "tailwind-merge": "^2.2.0",
     "uuid": "^9.0.1",
-    "vite": "^6.2.1",
+    "vite": "^6.2.5",
     "wagmi": "^2.14.15"
   },
   "devDependencies": {
