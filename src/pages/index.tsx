@@ -119,7 +119,7 @@ export default function Home() {
             By contributing to our crypto scam alert system, you help protect others from falling victim to the same schemes. Together, we can make the cryptocurrency ecosystem safer for everyone.
           </p>
           <p>
-            Whether you've encountered phishing attempts, fake tokens, malicious smart contracts, or other forms of crypto theft, your reports provide valuable data that helps others avoid these threats.
+            Whether you&apos;ve encountered phishing attempts, fake tokens, malicious smart contracts, or other forms of crypto theft, your reports provide valuable data that helps others avoid these threats.
           </p>
         </section>
       </div>

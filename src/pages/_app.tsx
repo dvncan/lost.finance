@@ -8,8 +8,8 @@ import "@/styles/globals.css";
 import Head from "next/head";
 import Layout from "@/components/Layout";
 import { useState } from "react";
-import dotenv from "dotenv";
-dotenv.config();
+
+const queryClient = new QueryClient();
 
 const config = createConfig({
   chains: [mainnet, sepolia],
@@ -17,44 +17,39 @@ const config = createConfig({
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(
-      "https://eth-sepolia.g.alchemy.com/v2/process.env.ALCHEMY_API_KEY"
+      `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
     ),
   },
   storage: createStorage({
     storage: typeof window !== "undefined" ? window.localStorage : undefined,
   }),
-  multiInjectedProviderDiscovery: false,
 });
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            refetchOnWindowFocus: false,
-            retry: false,
-          },
-        },
-      })
-  );
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure we only render client-side
+  if (!mounted) {
+    setMounted(true);
+    return null;
+  }
 
   return (
-    <>
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="robots" content="index, follow" />
-        <meta name="googlebot" content="index, follow" />
-        <meta charSet="utf-8" />
-        <link rel="canonical" href="https://ethfraudreport.com" />
-      </Head>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <WagmiProvider config={config}>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </WagmiProvider>
+        <Head>
+          <title>Lost Finance - Ethereum Fraud Reporting</title>
+          <meta
+            name="description"
+            content="Report and verify potentially malicious Ethereum addresses"
+          />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </QueryClientProvider>
-    </>
+    </WagmiProvider>
   );
 }
