@@ -185,10 +185,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Privacy Policy
               </a>
               <a
-                href="mailto:dundalbrown@gmail.com"
+                href="https://sepolia.etherscan.io/address/0xee5085d66fe9d6dd3a52c9197ebc526b730cabb0#code"
                 className="text-gray-400 hover:text-gray-300"
               >
-                Contact
+                Contract
               </a>
               <a
                 href="https://github.com/dvncan/lost.finance/"
