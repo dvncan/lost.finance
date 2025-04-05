@@ -9,7 +9,8 @@ import BlacklistABI from "@/abi/Blacklist.json";
 import { sepolia } from "@wagmi/chains";
 import { config } from "@/config/wagmi";
 
-const CONTRACT_ADDRESS = "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0" as `0x${string}`;
+const CONTRACT_ADDRESS =
+  "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0" as `0x${string}`;
 
 type TransactionEntry = {
   id: string;
@@ -74,33 +75,36 @@ export default function NewReport() {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       // Prepare data for contract
       const scammers = data.transactions.map((t) => t.toAddress);
       const transactions = data.transactions.map((t) => t.transactionHash);
 
       // Submit to contract
-      await writeContract({
-        abi: BlacklistABI,
-        address: CONTRACT_ADDRESS,
-        functionName: "reportAddress",
-        args: [
-          {
-            scammers,
-            transactions,
+      await writeContract(
+        {
+          abi: BlacklistABI,
+          address: CONTRACT_ADDRESS,
+          functionName: "reportAddress",
+          args: [
+            {
+              scammers,
+              transactions,
+            },
+          ],
+        },
+        {
+          onSuccess(data) {
+            console.log("Transaction hash:", data);
           },
-        ],
-      }, {
-        onSuccess(data) {
-          console.log("Transaction hash:", data);
-        },
-        onError(error) {
-          console.error("Error submitting report:", error);
-          setIsSubmitting(false);
-          alert("Failed to submit report. Please try again.");
-        },
-      });
+          onError(error) {
+            console.error("Error submitting report:", error);
+            setIsSubmitting(false);
+            alert("Failed to submit report. Please try again.");
+          },
+        }
+      );
     } catch (error) {
       console.error("Error submitting report:", error);
       setIsSubmitting(false);
@@ -310,9 +314,11 @@ export default function NewReport() {
           </p>
           <p className="text-gray-300">
             Each documented case helps improve fraud detection systems and
-            raises awareness about common scam techniques in the Ethereum
+            raises awareness about common scam techniques on the Ethereum
             network.
           </p>
+          <p className="text-gray-300">
+            If you don't have any ETH on the Sepolia testnet, you can use a faucet like <a href="https://faucet.sepolia.org/">https://faucet.sepolia.org/</a> to request some. This will allow you to submit your report on the testnet without incurring any costs.
         </div>
       </div>
     </>
