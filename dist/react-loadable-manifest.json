@@ -1,0 +1,78 @@
+{
+  "../../node_modules/@wagmi/connectors/dist/esm/coinbaseWallet.js -> @coinbase/wallet-sdk": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/@wagmi/connectors/dist/esm/coinbaseWallet.js -> cbw-sdk": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/@wagmi/connectors/dist/esm/metaMask.js -> @metamask/sdk": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/@wagmi/connectors/dist/esm/safe.js -> @safe-global/safe-apps-provider": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/@wagmi/connectors/dist/esm/safe.js -> @safe-global/safe-apps-sdk": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/@wagmi/connectors/dist/esm/walletConnect.js -> @walletconnect/ethereum-provider": {
+    "id": 5174,
+    "files": [
+      "static/chunks/174.2cdb9c640b06ec50.js",
+      "static/chunks/799.a90714ec3c8406ef.js"
+    ]
+  },
+  "../../node_modules/@walletconnect/ethereum-provider/dist/index.es.js -> @walletconnect/modal": {
+    "id": 9343,
+    "files": [
+      "static/chunks/343.ed18a2b9da636726.js"
+    ]
+  },
+  "../../node_modules/@walletconnect/modal/dist/index.js -> @walletconnect/modal-ui": {
+    "id": 1391,
+    "files": [
+      "static/chunks/391.a518bc4eff05718a.js"
+    ]
+  },
+  "../../node_modules/@walletconnect/utils/node_modules/viem/_esm/actions/public/call.js -> ../../utils/ccip.js": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/@walletconnect/utils/node_modules/viem/_esm/utils/rpc/webSocket.js -> isows": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/@walletconnect/utils/node_modules/viem/_esm/utils/signature/recoverPublicKey.js -> @noble/curves/secp256k1": {
+    "id": 4849,
+    "files": [
+      "static/chunks/849.1bcf21a06c03a680.js",
+      "static/chunks/932.13cdd2ed35938b01.js"
+    ]
+  },
+  "../../node_modules/viem/_esm/actions/public/call.js -> ../../utils/ccip.js": {
+    "id": 1785,
+    "files": [
+      "static/chunks/785.c47c865110367403.js"
+    ]
+  },
+  "../../node_modules/viem/_esm/utils/rpc/webSocket.js -> isows": {
+    "id": null,
+    "files": []
+  },
+  "../../node_modules/viem/_esm/utils/signature/recoverPublicKey.js -> @noble/curves/secp256k1": {
+    "id": 4849,
+    "files": [
+      "static/chunks/849.1bcf21a06c03a680.js"
+    ]
+  },
+  "../components/Layout.tsx -> ./WalletButton": {
+    "id": 7829,
+    "files": [
+      "static/chunks/829.cf8e7d782f0fa0f4.js"
+    ]
+  }
+}
