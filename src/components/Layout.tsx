@@ -178,14 +178,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-gray-300">
+              <a href="/terms" className="text-gray-400 hover:text-gray-300">
                 Terms of Service
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-300">
+              <a href="/privacy" className="text-gray-400 hover:text-gray-300">
                 Privacy Policy
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-300">
+              <a
+                href="mailto:dundalbrown@gmail.com"
+                className="text-gray-400 hover:text-gray-300"
+              >
                 Contact
+              </a>
+              <a
+                href="https://github.com/dvncan/lost.finance/"
+                className="text-gray-400 hover:text-gray-300"
+              >
+                Lost Finance GitHub
               </a>
             </div>
           </div>
@@ -204,7 +213,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               Keywords: crypto scam, ethereum fraud, report crypto scam,
               cryptocurrency fraud, blockchain security, crypto theft, ethereum
-              scam, crypto fraud detection
+              scam, crypto fraud detection, web3 security, scam reporting,
+              address verification, address checking, lost.finance, lost crypto,
+              hacked crypto, i was hacked, lost funds, crypto wallet, lost
+              crypto wallet, hacked wallet
             </p>
           </div>
         </div>
