@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useForm, useFieldArray } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
@@ -27,11 +27,16 @@ type FormData = {
 export default function NewReport() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { address, chain, isConnected } = useAccount();
 
   const { writeContract, isError, isPending } = useWriteContract({
     config,
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     register,
@@ -40,12 +45,18 @@ export default function NewReport() {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      reporterAddress: address || "",
+      reporterAddress: "",
       transactions: [
         { id: uuidv4(), fromAddress: "", toAddress: "", transactionHash: "" },
       ],
     },
   });
+
+  useEffect(() => {
+    if (mounted && address) {
+      register("reporterAddress", { value: address });
+    }
+  }, [mounted, address, register]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -317,8 +328,23 @@ export default function NewReport() {
             raises awareness about common scam techniques on the Ethereum
             network.
           </p>
+          <br />
+          <h3 className="text-xl font-semibold mb-4 text-white">
+            How to Get ETH for Testing
+          </h3>
           <p className="text-gray-300">
-            If you don't have any ETH on the Sepolia testnet, you can use a faucet like <a href="https://faucet.sepolia.org/">https://faucet.sepolia.org/</a> to request some. This will allow you to submit your report on the testnet without incurring any costs.
+            If you don't have any ETH on the Sepolia testnet, you can use a{" "}
+            <a
+              href="https://www.alchemy.com/faucets/ethereum-sepolia"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500"
+            >
+              faucet
+            </a>{" "}
+            to request some. This will allow you to submit your report on the
+            testnet without incurring any costs.
+          </p>
         </div>
       </div>
     </>
