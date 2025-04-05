@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useForm, useFieldArray } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
@@ -9,7 +9,8 @@ import BlacklistABI from "@/abi/Blacklist.json";
 import { sepolia } from "@wagmi/chains";
 import { config } from "@/config/wagmi";
 
-const CONTRACT_ADDRESS = "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0" as `0x${string}`;
+const CONTRACT_ADDRESS =
+  "0xEE5085D66FE9D6dD3A52C9197EbC526B730CaBb0" as `0x${string}`;
 
 type TransactionEntry = {
   id: string;
@@ -26,11 +27,16 @@ type FormData = {
 export default function NewReport() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { address, chain, isConnected } = useAccount();
 
   const { writeContract, isError, isPending } = useWriteContract({
     config,
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     register,
@@ -39,12 +45,18 @@ export default function NewReport() {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      reporterAddress: address || "",
+      reporterAddress: "",
       transactions: [
         { id: uuidv4(), fromAddress: "", toAddress: "", transactionHash: "" },
       ],
     },
   });
+
+  useEffect(() => {
+    if (mounted && address) {
+      register("reporterAddress", { value: address });
+    }
+  }, [mounted, address, register]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -74,33 +86,36 @@ export default function NewReport() {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       // Prepare data for contract
       const scammers = data.transactions.map((t) => t.toAddress);
       const transactions = data.transactions.map((t) => t.transactionHash);
 
       // Submit to contract
-      await writeContract({
-        abi: BlacklistABI,
-        address: CONTRACT_ADDRESS,
-        functionName: "reportAddress",
-        args: [
-          {
-            scammers,
-            transactions,
+      await writeContract(
+        {
+          abi: BlacklistABI,
+          address: CONTRACT_ADDRESS,
+          functionName: "reportAddress",
+          args: [
+            {
+              scammers,
+              transactions,
+            },
+          ],
+        },
+        {
+          onSuccess(data) {
+            console.log("Transaction hash:", data);
           },
-        ],
-      }, {
-        onSuccess(data) {
-          console.log("Transaction hash:", data);
-        },
-        onError(error) {
-          console.error("Error submitting report:", error);
-          setIsSubmitting(false);
-          alert("Failed to submit report. Please try again.");
-        },
-      });
+          onError(error) {
+            console.error("Error submitting report:", error);
+            setIsSubmitting(false);
+            alert("Failed to submit report. Please try again.");
+          },
+        }
+      );
     } catch (error) {
       console.error("Error submitting report:", error);
       setIsSubmitting(false);
@@ -310,8 +325,25 @@ export default function NewReport() {
           </p>
           <p className="text-gray-300">
             Each documented case helps improve fraud detection systems and
-            raises awareness about common scam techniques in the Ethereum
+            raises awareness about common scam techniques on the Ethereum
             network.
+          </p>
+          <br />
+          <h3 className="text-xl font-semibold mb-4 text-white">
+            How to Get ETH for Testing
+          </h3>
+          <p className="text-gray-300">
+            If you don't have any ETH on the Sepolia testnet, you can use a{" "}
+            <a
+              href="https://www.alchemy.com/faucets/ethereum-sepolia"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500"
+            >
+              faucet
+            </a>{" "}
+            to request some. This will allow you to submit your report on the
+            testnet without incurring any costs.
           </p>
         </div>
       </div>
