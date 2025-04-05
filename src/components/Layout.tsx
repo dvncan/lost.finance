@@ -99,12 +99,46 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
+          style={{
+            position: "absolute",
+            clip: "rect(0 0 0 0)",
+            width: 1,
+            height: 1,
+            margin: -1,
+            padding: 0,
+            border: 0,
+            overflow: "hidden",
+          }}
           name="description"
           content="Report cryptocurrency scams, verify Ethereum addresses, and protect yourself from crypto fraud. Our blockchain security tool helps identify malicious actors and prevent crypto theft."
         />
         <meta
+          style={{
+            position: "absolute",
+            clip: "rect(0 0 0 0)",
+            width: 1,
+            height: 1,
+            margin: -1,
+            padding: 0,
+            border: 0,
+            overflow: "hidden",
+          }}
           name="keywords"
           content="crypto scam, ethereum fraud, report crypto scam, cryptocurrency fraud, blockchain security, crypto theft, ethereum scam, crypto fraud detection, crypto scam alert, crypto fraud prevention"
+        />
+        <meta
+          style={{
+            position: "absolute",
+            clip: "rect(0 0 0 0)",
+            width: 1,
+            height: 1,
+            margin: -1,
+            padding: 0,
+            border: 0,
+            overflow: "hidden",
+          }}
+          name="author"
+          content="dvncan.eth"
         />
       </Head>
 
@@ -139,7 +173,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <p className="text-gray-400 text-sm">
-                © {new Date().getFullYear()} Lost Finance. All rights reserved.
+                &copy; {new Date().getFullYear()} Lost Finance. All rights
+                reserved.
               </p>
             </div>
             <div className="flex space-x-6">
@@ -155,7 +190,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="mt-4 text-center text-xs text-gray-500">
-            <p>
+            <p
+              style={{
+                position: "absolute",
+                clip: "rect(0 0 0 0)",
+                width: 1,
+                height: 1,
+                margin: -1,
+                padding: 0,
+                border: 0,
+                overflow: "hidden",
+              }}
+            >
               Keywords: crypto scam, ethereum fraud, report crypto scam,
               cryptocurrency fraud, blockchain security, crypto theft, ethereum
               scam, crypto fraud detection
