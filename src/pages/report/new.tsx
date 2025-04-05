@@ -131,25 +131,35 @@ export default function NewReport() {
           Reporting
         </title>
         <meta
+          style={{ display: "none" }}
           name="description"
           content="Report cryptocurrency scams and Ethereum fraud. Document blockchain scams, phishing attempts, and malicious actors to protect the crypto community from theft."
         />
         <meta
+          style={{ display: "none" }}
           name="keywords"
           content="report crypto scam, ethereum fraud report, cryptocurrency theft, report blockchain scam, crypto fraud reporting, document crypto scam, ethereum scam alert, crypto phishing report"
         />
+        <meta style={{ display: "none" }} name="author" content="dvncan.eth" />
 
         {/* Open Graph / Social Media Meta Tags */}
         <meta
+          style={{ display: "none" }}
           property="og:title"
           content="Report Crypto Scam | Document Ethereum Fraud"
         />
         <meta
+          style={{ display: "none" }}
           property="og:description"
           content="Report cryptocurrency scams and Ethereum fraud. Document blockchain scams, phishing attempts, and malicious actors to protect the crypto community from theft."
         />
-        <meta property="og:type" content="website" />
         <meta
+          style={{ display: "none" }}
+          property="og:type"
+          content="website"
+        />
+        <meta
+          style={{ display: "none" }}
           property="og:url"
           content="https://ethfraudreport.com/report/new"
         />
