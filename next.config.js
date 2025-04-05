@@ -20,6 +20,10 @@ const nextConfig = {
     };
     return config;
   },
+  // Ensure proper routing
+  trailingSlash: false,
+  poweredByHeader: false,
+  generateEtags: true,
 }
 
 module.exports = nextConfig;
