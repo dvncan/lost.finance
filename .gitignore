@@ -8,8 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-x
+
 *.local
 
 # Editor directories and files
@@ -28,4 +27,4 @@ dist-x
 
 .env
 
-.next
+.next/
